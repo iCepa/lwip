@@ -520,6 +520,13 @@ ip4_input(struct pbuf *p, struct netif *inp)
       if (first) {
         first = 0;
         netif = netif_list;
+#ifdef LWIP_HOOK_IP4_NETIF
+        struct netif *hook = LWIP_HOOK_IP4_NETIF(iphdr);
+        if (hook) {
+          netif = hook;
+          break;
+        }
+#endif
       } else {
         netif = netif->next;
       }

@@ -42,7 +42,7 @@
 
 #include "lwip/errno.h"
 
-#if !NO_SYS
+#if !NO_SYS || LWIP_ERR_TO_ERRNO
 /** Table to quickly map an lwIP error (err_t) to a socket error
   * by using -err as an index */
 static const int err_to_errno_table[] = {
@@ -64,7 +64,7 @@ static const int err_to_errno_table[] = {
   ENOTCONN,      /* ERR_CLSD       -15     Connection closed.       */
   EIO            /* ERR_ARG        -16     Illegal argument.        */
 };
-#endif /* !NO_SYS */
+#endif /* !NO_SYS || LWIP_ERR_TO_ERRNO */
 
 #ifdef LWIP_DEBUG
 
@@ -105,7 +105,7 @@ lwip_strerr(err_t err)
 
 #endif /* LWIP_DEBUG */
 
-#if !NO_SYS
+#if !NO_SYS || LWIP_ERR_TO_ERRNO
 int
 err_to_errno(err_t err)
 {
@@ -114,4 +114,4 @@ err_to_errno(err_t err)
   }
   return err_to_errno_table[-err];
 }
-#endif /* !NO_SYS */
+#endif /* !NO_SYS || LWIP_ERR_TO_ERRNO */

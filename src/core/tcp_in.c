@@ -270,6 +270,15 @@ tcp_input(struct pbuf *p, struct netif *inp)
        are LISTENing for incoming connections. */
     prev = NULL;
     for (lpcb = tcp_listen_pcbs.listen_pcbs; lpcb != NULL; lpcb = lpcb->next) {
+#ifdef LWIP_HOOK_TCP_LISTEN_PCB
+      if (prev == NULL) {
+        struct tcp_pcb_listen *hook = LWIP_HOOK_TCP_LISTEN_PCB(tcphdr);
+        if (hook) {
+          lpcb = hook;
+          break;
+        }
+      }
+#endif
       if (lpcb->local_port == tcphdr->dest) {
         if (IP_IS_ANY_TYPE_VAL(lpcb->local_ip)) {
           /* found an ANY TYPE (IPv4/IPv6) match */
@@ -584,7 +593,7 @@ tcp_listen_input(struct tcp_pcb_listen *pcb)
     /* Set up the new PCB. */
     ip_addr_copy(npcb->local_ip, *ip_current_dest_addr());
     ip_addr_copy(npcb->remote_ip, *ip_current_src_addr());
-    npcb->local_port = pcb->local_port;
+    npcb->local_port = tcphdr->dest;
     npcb->remote_port = tcphdr->src;
     npcb->state = SYN_RCVD;
     npcb->rcv_nxt = seqno + 1;
