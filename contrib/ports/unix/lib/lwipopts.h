@@ -242,7 +242,7 @@
  * fragmentation. Otherwise pbufs are allocated and reference the original
     * packet data to be fragmented.
 */
-#define IP_FRAG_USES_STATIC_BUF         0
+#define IP_FRAG_USES_STATIC_BUF         1
 
 /**
  * IP_DEFAULT_TTL: Default value for Time-To-Live used by transport layers.
