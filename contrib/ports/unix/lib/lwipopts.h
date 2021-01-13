@@ -331,7 +331,9 @@
 /**
  * LWIP_UDP==1: Turn on UDP.
  */
-#define LWIP_UDP                        1
+/* FIXME(ahf): Disable UDP while we experiment with TCP DNS listening to
+ * simplify the packet reconstruction. */
+#define LWIP_UDP                        0
 
 /*
    ---------------------------------
