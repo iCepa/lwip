@@ -83,7 +83,7 @@
  */
 
 /** FIXME(ahf): 2020/11/5: Keep track here. 200 is not nearly enough at peaks. */
-#define MEM_SIZE                        800
+#define MEM_SIZE                        400
 
 /*
    ------------------------------------------------
