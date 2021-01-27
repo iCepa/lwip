@@ -1,0 +1,11 @@
+- Remember to filter out pbuf allocations while profiling, otherwise things
+  seems very confusing when we also look at Tor memory usage.
+- The IP socket layer seems not needed in tun2tor, but the hooks that Conrad
+  used in the patched lwip code seems to need it? This is confusing.
+
+---
+
+Memory:
+
+1. Some static buffers seems to be never touched even when we run for a while?
+Maybe we can disable those.
