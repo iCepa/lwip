@@ -321,6 +321,7 @@ tcp_input(struct pbuf *p, struct netif *inp)
         if (prev == NULL) {
           struct tcp_pcb_listen *hook = LWIP_HOOK_TCP_LISTEN_PCB(tcphdr);
           if (hook) {
+            LWIP_DEBUGF(TCP_INPUT_DEBUG, ("ahf: Hook set!\n"));
             lpcb = hook;
             break;
           }
