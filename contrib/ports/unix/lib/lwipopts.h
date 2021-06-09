@@ -80,10 +80,10 @@
 /**
  * MEM_SIZE: the size of the heap memory. If the application will send
  * a lot of data that needs to be copied, this should be set high.
+ *
+ * TODO(tla): 2021-06-09: Increase this, if tun2tor crashes in pbuf::into_pbuf()
  */
-
-/** FIXME(ahf): 2020/11/5: Keep track here. 200 is not nearly enough at peaks. */
-#define MEM_SIZE                        400
+#define MEM_SIZE                        128 * 1024 // In number of bytes!
 
 /*
    ------------------------------------------------
