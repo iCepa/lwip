@@ -108,7 +108,7 @@ extern const char *lwip_strerr(err_t err);
 
 #if !NO_SYS || LWIP_ERR_TO_ERRNO
 int err_to_errno(err_t err);
-#endif /* !NO_SYS */
+#endif /* !NO_SYS || LWIP_ERR_TO_ERRNO */
 
 #ifdef __cplusplus
 }
