@@ -1,4 +1,5 @@
-void eth_mac_irq()
+void
+eth_mac_irq()
 {
   /* Service MAC IRQ here */
 
@@ -17,7 +18,8 @@ void eth_mac_irq()
   }
 }
 
-static err_t netif_output(struct netif *netif, struct pbuf *p)
+static err_t 
+netif_output(struct netif *netif, struct pbuf *p)
 {
   LINK_STATS_INC(link.xmit);
 
@@ -38,12 +40,14 @@ static err_t netif_output(struct netif *netif, struct pbuf *p)
   return ERR_OK;
 }
 
-static void netif_status_callback(struct netif *netif)
+static void 
+netif_status_callback(struct netif *netif)
 {
   printf("netif status changed %s\n", ip4addr_ntoa(netif_ip4_addr(netif)));
 }
 
-static err_t netif_init(struct netif *netif)
+static err_t 
+netif_init(struct netif *netif)
 {
   netif->linkoutput = netif_output;
   netif->output     = etharp_output;
@@ -52,13 +56,14 @@ static err_t netif_init(struct netif *netif)
   netif->flags      = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP | NETIF_FLAG_ETHERNET | NETIF_FLAG_IGMP | NETIF_FLAG_MLD6;
   MIB2_INIT_NETIF(netif, snmp_ifType_ethernet_csmacd, 100000000);
 
-  SMEMCPY(netif->hwaddr, your_mac_address_goes_here, sizeof(netif->hwaddr));
-  netif->hwaddr_len = sizeof(netif->hwaddr);
+  SMEMCPY(netif->hwaddr, your_mac_address_goes_here, ETH_HWADDR_LEN);
+  netif->hwaddr_len = ETH_HWADDR_LEN;
 
   return ERR_OK;
 }
 
-void main(void)
+void 
+main(void)
 {
   struct netif netif;
 
@@ -68,13 +73,12 @@ void main(void)
   netif.name[0] = 'e';
   netif.name[1] = '0';
   netif_create_ip6_linklocal_address(&netif, 1);
-  netif.ip6_autoconfig_enabled = 1;
   netif_set_status_callback(&netif, netif_status_callback);
   netif_set_default(&netif);
   netif_set_up(&netif);
   
   /* Start DHCP and HTTPD */
-  dhcp_init();
+  dhcp_start(&netif );
   httpd_init();
 
   while(1) {

@@ -26,10 +26,7 @@
  *
  * This file is part of the lwIP TCP/IP stack.
  *
- * Author: Erik Ekman <erik.ekman@verisure.com>
- *
- * Please coordinate changes and requests with Erik Ekman
- * <erik.ekman@verisure.com>
+ * Author: Erik Ekman <erik@kryo.se>
  *
  */
 
@@ -37,6 +34,7 @@
 
 #include "lwip/pbuf.h"
 #include "lwip/apps/mdns.h"
+#include "lwip/apps/mdns_domain.h"
 #include "lwip/apps/mdns_priv.h"
 
 START_TEST(readname_basic)
@@ -45,10 +43,11 @@ START_TEST(readname_basic)
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
   offset = mdns_readname(p, 0, &domain);
   pbuf_free(p);
   fail_unless(offset == sizeof(data));
@@ -63,10 +62,11 @@ START_TEST(readname_anydata)
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
   offset = mdns_readname(p, 0, &domain);
   pbuf_free(p);
   fail_unless(offset == sizeof(data));
@@ -81,10 +81,11 @@ START_TEST(readname_short_buf)
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
   offset = mdns_readname(p, 0, &domain);
   pbuf_free(p);
   fail_unless(offset == MDNS_READNAME_ERROR);
@@ -92,22 +93,24 @@ START_TEST(readname_short_buf)
 END_TEST
 
 START_TEST(readname_long_label)
-{  static const u8_t data[] = {
+{
+  static const u8_t data[] = {
       0x05, 'm', 'u', 'l', 't', 'i',
       0x52, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
       'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
       'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
       'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
       'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
-      'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 0x00,
+      'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 0x00
   };
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
   offset = mdns_readname(p, 0, &domain);
   pbuf_free(p);
   fail_unless(offset == MDNS_READNAME_ERROR);
@@ -154,15 +157,16 @@ START_TEST(readname_overflow)
       0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't',
       0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't',
       0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't',
-      0x00,
+      0x00
   };
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
   offset = mdns_readname(p, 0, &domain);
   pbuf_free(p);
   fail_unless(offset == MDNS_READNAME_ERROR);
@@ -175,18 +179,19 @@ START_TEST(readname_jump_earlier)
       /* Some padding needed, not supported to jump to bytes containing dns header */
       /*  0 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       /* 10 */ 0x0f, 0x0e, 0x05, 'l', 'o', 'c', 'a', 'l', 0x00, 0xab,
-      /* 20 */ 0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0xc0, 0x0c,
+      /* 20 */ 0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0xc0, 0x0c
   };
   static const u8_t fullname[] = {
-      0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0x05, 'l', 'o', 'c', 'a', 'l', 0x00,
+      0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0x05, 'l', 'o', 'c', 'a', 'l', 0x00
   };
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
   offset = mdns_readname(p, 20, &domain);
   pbuf_free(p);
   fail_unless(offset == sizeof(data));
@@ -203,18 +208,19 @@ START_TEST(readname_jump_earlier_jump)
       /* 0x00 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       /* 0x08 */ 0x00, 0x00, 0x00, 0x00, 0x03, 0x0b, 0x0a, 0xf2,
       /* 0x10 */ 0x04, 'c', 'a', 's', 't', 0x00, 0xc0, 0x10,
-      /* 0x18 */ 0x05, 'm', 'u', 'l', 't', 'i', 0xc0, 0x16,
+      /* 0x18 */ 0x05, 'm', 'u', 'l', 't', 'i', 0xc0, 0x16
   };
   static const u8_t fullname[] = {
-      0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0x00,
+      0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0x00
   };
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
   offset = mdns_readname(p, 0x18, &domain);
   pbuf_free(p);
   fail_unless(offset == sizeof(data));
@@ -234,20 +240,21 @@ START_TEST(readname_jump_maxdepth)
       /* 0x18 */ 0x03, 'd', 'n', 's', 0xc0, 0x10, 0xc0, 0x10,
       /* 0x20 */ 0x04, 'd', 'e', 'e', 'p', 0xc0, 0x18, 0x00,
       /* 0x28 */ 0x04, 'c', 'a', 's', 't', 0xc0, 0x20, 0xb0,
-      /* 0x30 */ 0x05, 'm', 'u', 'l', 't', 'i', 0xc0, 0x28,
+      /* 0x30 */ 0x05, 'm', 'u', 'l', 't', 'i', 0xc0, 0x28
   };
   static const u8_t fullname[] = {
       0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't',
       0x04, 'd', 'e', 'e', 'p', 0x03, 'd', 'n', 's',
-      0x04, 'n', 'a', 'm', 'e', 0x00,
+      0x04, 'n', 'a', 'm', 'e', 0x00
   };
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
   offset = mdns_readname(p, 0x30, &domain);
   pbuf_free(p);
   fail_unless(offset == sizeof(data));
@@ -261,18 +268,19 @@ START_TEST(readname_jump_later)
 {
   static const u8_t data[] = {
       /* 0x00 */ 0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0xc0, 0x10, 0x00, 0x01, 0x40,
-      /* 0x10 */ 0x05, 'l', 'o', 'c', 'a', 'l', 0x00, 0xab,
+      /* 0x10 */ 0x05, 'l', 'o', 'c', 'a', 'l', 0x00, 0xab
   };
   static const u8_t fullname[] = {
-      0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0x05, 'l', 'o', 'c', 'a', 'l', 0x00,
+      0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0x05, 'l', 'o', 'c', 'a', 'l', 0x00
   };
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
   offset = mdns_readname(p, 0, &domain);
   pbuf_free(p);
   fail_unless(offset == 13);
@@ -285,15 +293,16 @@ END_TEST
 START_TEST(readname_half_jump)
 {
   static const u8_t data[] = {
-      0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0xc0,
+      0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0xc0
   };
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
   offset = mdns_readname(p, 0, &domain);
   pbuf_free(p);
   fail_unless(offset == MDNS_READNAME_ERROR);
@@ -303,15 +312,16 @@ END_TEST
 START_TEST(readname_jump_toolong)
 {
   static const u8_t data[] = {
-      0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0xc2, 0x10, 0x00, 0x01, 0x40,
+      0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0xc2, 0x10, 0x00, 0x01, 0x40
   };
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
   offset = mdns_readname(p, 0, &domain);
   pbuf_free(p);
   fail_unless(offset == MDNS_READNAME_ERROR);
@@ -322,15 +332,16 @@ START_TEST(readname_jump_loop_label)
 {
   static const u8_t data[] = {
       /*  0 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      /* 10 */ 0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0xc0, 0x10,
+      /* 10 */ 0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0xc0, 0x10
   };
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
   offset = mdns_readname(p, 10, &domain);
   pbuf_free(p);
   fail_unless(offset == MDNS_READNAME_ERROR);
@@ -341,15 +352,16 @@ START_TEST(readname_jump_loop_jump)
 {
   static const u8_t data[] = {
       /*  0 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      /* 10 */ 0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0xc0, 0x15,
+      /* 10 */ 0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0xc0, 0x15
   };
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
   offset = mdns_readname(p, 10, &domain);
   pbuf_free(p);
   fail_unless(offset == MDNS_READNAME_ERROR);
@@ -361,6 +373,7 @@ START_TEST(add_label_basic)
   static const u8_t data[] = { 0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0x00 };
   struct mdns_domain domain;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   memset(&domain, 0, sizeof(domain));
   res = mdns_domain_add_label(&domain, "multi", 5);
@@ -379,6 +392,7 @@ START_TEST(add_label_long_label)
   static const char *toolong = "abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-";
   struct mdns_domain domain;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   memset(&domain, 0, sizeof(domain));
   res = mdns_domain_add_label(&domain, "multi", 5);
@@ -393,6 +407,7 @@ START_TEST(add_label_full)
   static const char *label = "0123456789abcdef0123456789abcdef";
   struct mdns_domain domain;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   memset(&domain, 0, sizeof(domain));
   res = mdns_domain_add_label(&domain, label, (u8_t)strlen(label));
@@ -440,10 +455,11 @@ END_TEST
 START_TEST(domain_eq_basic)
 {
   static const u8_t data[] = {
-      0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0x00,
+      0x05, 'm', 'u', 'l', 't', 'i', 0x04, 'c', 'a', 's', 't', 0x00
   };
   struct mdns_domain domain1, domain2;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   memset(&domain1, 0, sizeof(domain1));
   res = mdns_domain_add_label(&domain1, "multi", 5);
@@ -470,6 +486,7 @@ START_TEST(domain_eq_diff)
 {
   struct mdns_domain domain1, domain2;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   memset(&domain1, 0, sizeof(domain1));
   res = mdns_domain_add_label(&domain1, "multi", 5);
@@ -495,6 +512,7 @@ START_TEST(domain_eq_case)
 {
   struct mdns_domain domain1, domain2;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   memset(&domain1, 0, sizeof(domain1));
   res = mdns_domain_add_label(&domain1, "multi", 5);
@@ -522,6 +540,7 @@ START_TEST(domain_eq_anydata)
   static const u8_t data2[] = { 0x7f, 0x8c, 0x01, 0xff, 0xcf };
   struct mdns_domain domain1, domain2;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   memset(&domain1, 0, sizeof(domain1));
   res = mdns_domain_add_label(&domain1, (const char*)data1, sizeof(data1));
@@ -551,6 +570,7 @@ START_TEST(domain_eq_length)
 {
   struct mdns_domain domain1, domain2;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   memset(&domain1, 0, sizeof(domain1));
   memset(domain1.name, 0xAA, sizeof(MDNS_DOMAIN_MAXLEN));
@@ -581,10 +601,11 @@ START_TEST(compress_full_match)
   u16_t offset;
   u16_t length;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
 
   memset(&domain, 0, sizeof(domain));
   res = mdns_domain_add_label(&domain, "foobar", 6);
@@ -615,10 +636,11 @@ START_TEST(compress_full_match_subset)
   u16_t offset;
   u16_t length;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
 
   memset(&domain, 0, sizeof(domain));
   res = mdns_domain_add_label(&domain, "foobar", 6);
@@ -644,17 +666,18 @@ START_TEST(compress_full_match_jump)
     /* 0x00 */ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
                0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
     /* 0x10 */ 0x04, 'l', 'w', 'i', 'p', 0x05, 'l', 'o', 'c', 'a', 'l', 0x00, 0xc0, 0x00, 0x02, 0x00,
-    /* 0x20 */ 0x06, 'f', 'o', 'o', 'b', 'a', 'r', 0xc0, 0x15,
+    /* 0x20 */ 0x06, 'f', 'o', 'o', 'b', 'a', 'r', 0xc0, 0x15
   };
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
   u16_t length;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
 
   memset(&domain, 0, sizeof(domain));
   res = mdns_domain_add_label(&domain, "foobar", 6);
@@ -685,10 +708,11 @@ START_TEST(compress_no_match)
   u16_t offset;
   u16_t length;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
 
   memset(&domain, 0, sizeof(domain));
   res = mdns_domain_add_label(&domain, "foobar", 6);
@@ -718,10 +742,11 @@ START_TEST(compress_2nd_label)
   u16_t offset;
   u16_t length;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
 
   memset(&domain, 0, sizeof(domain));
   res = mdns_domain_add_label(&domain, "lwip", 4);
@@ -752,10 +777,11 @@ START_TEST(compress_2nd_label_short)
   u16_t offset;
   u16_t length;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
 
   memset(&domain, 0, sizeof(domain));
   res = mdns_domain_add_label(&domain, "foobar", 6);
@@ -781,17 +807,18 @@ START_TEST(compress_jump_to_jump)
       /* 0x00 */ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
                  0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
       /* 0x10 */ 0x04, 'l', 'w', 'i', 'p', 0x05, 'l', 'o', 'c', 'a', 'l', 0x00, 0xc0, 0x00, 0x02, 0x00,
-      /* 0x20 */ 0x07, 'b', 'a', 'n', 'a', 'n', 'a', 's', 0xc0, 0x15,
+      /* 0x20 */ 0x07, 'b', 'a', 'n', 'a', 'n', 'a', 's', 0xc0, 0x15
   };
   struct pbuf *p;
   struct mdns_domain domain;
   u16_t offset;
   u16_t length;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
 
   memset(&domain, 0, sizeof(domain));
   res = mdns_domain_add_label(&domain, "foobar", 6);
@@ -803,7 +830,7 @@ START_TEST(compress_jump_to_jump)
 
   offset = 0x20;
   length = mdns_compress_domain(p, &offset, &domain);
-  /* Dont compress if jump would be to a jump */
+  /* Don't compress if jump would be to a jump */
   fail_unless(length == domain.length);
 
   offset = 0x10;
@@ -827,10 +854,11 @@ START_TEST(compress_long_match)
   u16_t offset;
   u16_t length;
   err_t res;
+  LWIP_UNUSED_ARG(_i);
 
   p = pbuf_alloc(PBUF_RAW, sizeof(data), PBUF_ROM);
-  p->payload = (void *)(size_t)data;
   fail_if(p == NULL);
+  p->payload = (void *)(size_t)data;
 
   memset(&domain, 0, sizeof(domain));
   res = mdns_domain_add_label(&domain, "foobar", 6);
